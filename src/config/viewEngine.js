@@ -1,7 +1,7 @@
-const handlebars = require('express-handlebars');
+const hbs = require('express-handlebars');
 
 function setupViewEngine(app) {
-    app.engine('handlebars', handlebars.engine({
+    app.engine('hbs', hbs.engine({
         extname: 'hbs'
     }));
     app.set('view engine', 'hbs');
