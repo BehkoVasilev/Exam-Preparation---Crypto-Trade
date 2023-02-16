@@ -1,4 +1,5 @@
 const router = require('express').Router();
+const { isAuthenticated } = require('../middlewares/authenticationMiddleware');
 const cryptoService = require('../service/cryptoService');
 
 // URL: /accessories/create
@@ -17,7 +18,7 @@ router.get('/details', async (req, res) => {
     }
     res.render('crypto/details', { crypto, isOwner });
 });
-router.get('/search', (req, res) => {
+router.get('/search', isAuthenticated, (req, res) => {
     res.render('crypto/search')
 });
 
@@ -25,7 +26,7 @@ router.get('/edit', (req, res) => {
     res.render('crypto/edit')
 });
 
-router.get('/create', (req, res) => {
+router.get('/create', isAuthenticated, (req, res) => {
     res.render('crypto/create');
 });
 

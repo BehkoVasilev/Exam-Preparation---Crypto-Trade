@@ -26,9 +26,7 @@ exports.postRegisterController = async (req, res) => {
     }
     try {
         const user = await authService.register(username, email, password);
-        console.log(user);
     } catch (err) {
-        console.log(err);
         const errors = parserMongooseErrors(err);
         return res.render('auth/register', { error: errors[0] });
     }
@@ -54,3 +52,8 @@ exports.postLoginController = async (req, res) => {
 
     res.redirect('/')
 };
+
+exports.getLogoutController = (req, res) => {
+    res.clearCookie('auth');
+    res.redirect('/');
+}
