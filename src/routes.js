@@ -1,19 +1,17 @@
 const router = require('express').Router();
 const { getHomeController } = require('./controllers/homeController');
-const authControler = require('./controllers/authController')
-
+const authController = require('./controllers/authController');
+const cryptoController = require('./controllers/cryptoController');
 
 
 
 router.get('/', getHomeController);
-router.get('/crypto/search', (req, res) => {
-    res.render('search');
-});
 
-router.get('/register', authControler.getRegisterController);
-router.post('/register', authControler.postRegisterController);
-router.get('/login', authControler.getLoginController);
-router.post('/login', authControler.postLoginController);
+router.get('/register', authController.getRegisterController);
+router.post('/register', authController.postRegisterController);
+router.get('/login', authController.getLoginController);
+router.post('/login', authController.postLoginController);
 
+router.use('/crypto', cryptoController);
 
 module.exports = router;
