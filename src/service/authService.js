@@ -7,7 +7,14 @@ const { SECRET } = require('../constants');
 
 exports.getUserByEmail = (email) => User.findOne({ email });
 
-exports.register = (username, email, password) => User.create({ username, email, password });
+exports.register = async (username, email, password) => {
+    
+    await User.create({ username, email, password });
+
+    const token = await this.login(email, password);
+    
+    return token 
+}
 
 exports.login = async (email, password) => {
     const user = await this.getUserByEmail(email)

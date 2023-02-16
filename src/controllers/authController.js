@@ -11,11 +11,9 @@ exports.postRegisterController = async (req, res) => {
 
     if (repassword == '') {
         return res.render('auth/register', { error: `Confirm password is required!` });
-
     }
 
     if (password !== repassword) {
-
         return res.render('auth/register', { error: `Password does not match!` });
     };
 
@@ -25,13 +23,15 @@ exports.postRegisterController = async (req, res) => {
         return res.render('auth/register', { error: `User already exists!` })
     }
     try {
-        const user = await authService.register(username, email, password);
+        const token = await authService.register(username, email, password);
+        res.cookie('auth', token, { httpOnly: true });
+
     } catch (err) {
         const errors = parserMongooseErrors(err);
         return res.render('auth/register', { error: errors[0] });
     }
 
-    res.redirect('/login')
+    res.redirect('/')
 };
 
 exports.getLoginController = (req, res) => {
@@ -47,7 +47,7 @@ exports.postLoginController = async (req, res) => {
 
     } catch (err) {
         // const errors = parserMongooseErrors(err);
-        return res.render('auth/login', { error: err.message });
+        return res.status(404).render('auth/login', { error: err.message });
     }
 
     res.redirect('/')
