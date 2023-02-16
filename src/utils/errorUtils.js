@@ -1,7 +1,8 @@
 exports.getFirstMongooseError= (err) => {
-    const errors = Object.keys(err.errors).map(key => err.errors[key].message);
-
-    return errors[0]
+    // const errors = Object.keys(err.errors).map(key => err.errors[key].message);
+    const firstError = Object.values(err.errors)[0].message;
+    // return errors[0]
+    return firstError
 }
 
 exports.getErrorMessage = (err) => {
