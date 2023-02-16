@@ -11,7 +11,6 @@ exports.register = async (username, email, password) => {
     
     await User.create({ username, email, password });
 
-
     const token = await this.login(email, password);
     
     return token 

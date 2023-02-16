@@ -1,5 +1,5 @@
 const authService = require("../service/authService");
-const { getErrorMessage } = require("../utils/errorUtils");
+const { parserMongooseErrors } = require("../utils/errorUtils");
 
 exports.getRegisterController = (req, res) => {
     res.render('auth/register');
@@ -27,7 +27,8 @@ exports.postRegisterController = async (req, res) => {
         res.cookie('auth', token, { httpOnly: true });
 
     } catch (err) {
-        return res.render('auth/register', { error: getErrorMessage(err) });
+        const errors = parserMongooseErrors(err);
+        return res.render('auth/register', { error: errors[0] });
     }
 
     res.redirect('/')
@@ -45,7 +46,8 @@ exports.postLoginController = async (req, res) => {
         res.cookie('auth', token, { httpOnly: true });
 
     } catch (err) {
-        return res.render('auth/login', { error: getErrorMessage(err) });
+        // const errors = parserMongooseErrors(err);
+        return res.status(404).render('auth/login', { error: err.message });
     }
 
     res.redirect('/')
