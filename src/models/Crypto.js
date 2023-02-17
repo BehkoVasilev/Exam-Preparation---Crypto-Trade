@@ -8,7 +8,8 @@ const cryptoSchema = new mognoose.Schema({
     },
     imageUrl: {
         type: String,
-        required: true
+        required: true,
+        match: [/^(http(s)?:\/\/)/, 'Invalid Url']
     },
     price: {
         type: Number,

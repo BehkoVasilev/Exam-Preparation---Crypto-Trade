@@ -1,17 +1,21 @@
 const router = require('express').Router();
 const { isAuthenticated } = require('../middlewares/authenticationMiddleware');
 const cryptoService = require('../service/cryptoService');
+const { getErrorMessage } = require('../utils/errorUtils');
 
 // URL: /accessories/create
-router.get('/catalog', (req, res) => {
-    res.render('crypto/catalog')
+router.get('/catalog', async (req, res) => {
+    const allCrypto = await cryptoService.getAll();
+
+    res.render('crypto/catalog', { allCrypto })
 });
 
-router.get('/details', async (req, res) => {
+router.get('/:cryptoId/details', async (req, res) => {
     const cryptoId = req.params.cryptoId;
 
-    const crypto = await cryptoService.getOne(cryptoId)
-    // const isOwner = req.user?._id == cube.owner;
+    const crypto = await cryptoService.getOne(cryptoId).lean();
+
+    const isOwner = req.user?._id == crypto.owner;
 
     if (!crypto) {
         return res.redirect('/404')
@@ -30,13 +34,18 @@ router.get('/create', isAuthenticated, (req, res) => {
     res.render('crypto/create');
 });
 
-// router.post('/create', async (req, res) =>{
-//     const {name, description, imageUrl} = req.body;
 
-//      await Accessory.create({name, description, imageUrl});
+router.post('/create', isAuthenticated, async (req, res) => {
+    const { name, imageUrl, price, description, method } = req.body;
 
-//     res.redirect('/')
-// });
+    try {
+        await cryptoService.createOne(req.user._id, { name, imageUrl, price, description, method });
+    } catch (err) {
+        return res.status(400).render('crypto/create', { error: getErrorMessage(err) });
+    }
+
+    res.redirect('/crypto/catalog')
+});
 
 
 module.exports = router;

@@ -1,8 +1,10 @@
-// const Crypto = require('../models/Crypto');
+const Crypto = require('../models/Crypto');
 
-// exports.createOne = (data) => new Crypto(data)
+exports.getAll = () => Crypto.find({}).lean();
 
-// exports.getOne = (cryptoId) => Cube.findById(cryptoId);
+exports.createOne = (ownerId, data) => Crypto.create({...data, owner: ownerId});
+
+exports.getOne = (cryptoId) => Crypto.findById(cryptoId);
 
 // exports.getOneAndPopulate = (cubeId) => Cube.findById(cubeId)
 // .populate('accessories')
