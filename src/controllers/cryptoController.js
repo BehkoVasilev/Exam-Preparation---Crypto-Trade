@@ -1,4 +1,5 @@
 const router = require('express').Router();
+const { methodsMap } = require('../constants');
 const { isAuthenticated } = require('../middlewares/authenticationMiddleware');
 const cryptoService = require('../service/cryptoService');
 const { getErrorMessage } = require('../utils/errorUtils');
@@ -16,19 +17,46 @@ router.get('/:cryptoId/details', async (req, res) => {
     const crypto = await cryptoService.getOne(cryptoId).lean();
 
     const isOwner = req.user?._id == crypto.owner;
+    const isBuyer = crypto.buyers?.some(id => id == req.user?._id);
 
     if (!crypto) {
         return res.redirect('/404')
     }
-    res.render('crypto/details', { crypto, isOwner });
+    res.render('crypto/details', { crypto, isOwner, isBuyer });
 });
+
+router.get('/:cryptoId/buy', isAuthenticated, async (req, res) => {
+
+    await cryptoService.buy(req.user._id, req.params.cryptoId);
+
+    res.redirect(`/crypto/${req.params.cryptoId}/details`);
+});
+
 router.get('/search', isAuthenticated, (req, res) => {
     res.render('crypto/search')
 });
 
-router.get('/edit', (req, res) => {
-    res.render('crypto/edit')
+router.get('/:cryptoId/edit', isAuthenticated, async (req, res) => {
+    const crypto = await cryptoService.getOne(req.params.cryptoId).lean();
+
+    const paymentMehtods = Object.keys(methodsMap).map(key => ({
+        value: key,
+        label: methodsMap[key],
+        isSelected: crypto.method == key,
+    }));
+
+    res.render('crypto/edit', { crypto, paymentMehtods })
 });
+
+router.post('/:cryptoId/edit', isAuthenticated, async (req, res) => {
+    const cryptoData = req.body;
+    const cryptoId = req.params.cryptoId;
+
+    await cryptoService.editOne(cryptoId, cryptoData);
+
+    res.redirect(`/crypto/${cryptoId}/details`)
+})
+
 
 router.get('/create', isAuthenticated, (req, res) => {
     res.render('crypto/create');
@@ -46,6 +74,13 @@ router.post('/create', isAuthenticated, async (req, res) => {
 
     res.redirect('/crypto/catalog')
 });
+
+router.get('/:cryptoId/delete', async (req, res) => {
+
+    await cryptoService.deleteOne(req.params.cryptoId);
+
+    res.redirect('/crypto/catalog')
+})
 
 
 module.exports = router;

@@ -25,7 +25,7 @@ const cryptoSchema = new mognoose.Schema({
         enum: ['crypto-wallet', 'credit-card', 'debit-card', 'paypal'],
 
     },
-    byers: [{
+    buyers: [{
         type: mongoose.Types.ObjectId,
         ref: 'User'
     }],
