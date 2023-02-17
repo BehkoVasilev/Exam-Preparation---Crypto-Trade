@@ -1,4 +1,5 @@
 const router = require('express').Router();
+const { methodsMap } = require('../constants');
 const { isAuthenticated } = require('../middlewares/authenticationMiddleware');
 const cryptoService = require('../service/cryptoService');
 const { getErrorMessage } = require('../utils/errorUtils');
@@ -19,6 +20,8 @@ router.get('/:cryptoId/details', async (req, res) => {
     const isOwner = req.user?._id == crypto.owner;
     const isBuyer = crypto.buyers?.some(id => id == req.user?._id);
 
+    crypto.method = methodsMap[crypto.method];
+
     if (!crypto) {
         return res.redirect('/404')
     }
@@ -26,8 +29,11 @@ router.get('/:cryptoId/details', async (req, res) => {
 });
 
 router.get('/:cryptoId/buy', isAuthenticated, async (req, res) => {
-
-    await cryptoService.buy(req.user._id, req.params.cryptoId);
+    try {
+        await cryptoService.buy(req.user._id, req.params.cryptoId);
+    } catch (err) {
+        return res.status(400).render('404', { error: getErrorMessage(err) });
+    }
 
     res.redirect(`/crypto/${req.params.cryptoId}/details`);
 });

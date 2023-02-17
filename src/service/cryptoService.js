@@ -10,7 +10,7 @@ exports.search = async (name, method) => {
     let crypto = await this.getAll();
 
     if (name) {
-        crypto = crypto.filter(x => x.name.toString()toLowerCase() == name.toLowerCase());
+        crypto = crypto.filter(x => x.name.toString().toLowerCase() == name.toLowerCase());
     }
 
     if (method) {
@@ -21,15 +21,6 @@ exports.search = async (name, method) => {
 
 exports.buy = (userId, cryptoId) => Crypto.findByIdAndUpdate(cryptoId, { $push: { buyers: userId } });
 
-exports.editOne = (cryptoId, data) => Crypto.findByIdAndUpdate(cryptoId, data);
+exports.editOne = (cryptoId, data) => Crypto.findByIdAndUpdate(cryptoId, data, { runValidators: true });
 
 exports.deleteOne = (cryptoId) => Crypto.findByIdAndDelete({ _id: cryptoId });
-
-
-// exports.getOneAndPopulate = (cubeId) => Cube.findById(cubeId)
-// .populate('accessories')
-// .lean();
-
-// exports.updateOne = (cubeId, data) => Cube.findByIdAndUpdate({_id: cubeId}, {...data});
-
-// exports.deleteOne = (cubeId) => Cube.deleteOne({_id: cubeId});
