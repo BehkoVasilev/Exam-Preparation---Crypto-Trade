@@ -3,20 +3,23 @@ const mognoose = require('mongoose');
 
 const cryptoSchema = new mognoose.Schema({
     name: {
-        type: String,
+        type: [String, 'Name is required!'],
+        minLength: [2, 'Name must be at least 2 characters!'],
         required: true
     },
     imageUrl: {
-        type: String,
+        type: [String, 'Image is required!'],
         required: true,
         match: [/^(http(s)?:\/\/)/, 'Invalid Url']
     },
     price: {
-        type: Number,
+        type: [Number, 'Price is required!'],
+        min: [0, 'Number must be positive!'],
         required: true
     },
     description: {
-        type: String,
+        type: [String, 'Description is required!'],
+        minLength: [10, 'Name must be at least 2 characters!'],
         required: true
     },
     method: {

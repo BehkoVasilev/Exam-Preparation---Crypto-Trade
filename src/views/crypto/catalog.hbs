@@ -4,19 +4,8 @@
     <div class="offer-list">
       {{#if allCrypto}}
         {{#each allCrypto}}
-          <div class="coin">
-            <div class="coin-img">
-              <img src="{{imageUrl}}">
-            </div>
-            <div class="coin-info">
-              <h1>{{name}}</h1>
-              <p><span>Price: </span>{{price}}</p>
-              <p><span>Payment: </span>{{method}}</p>
-            </div>
-          </div>
-        <a href="/crypto/{{_id}}/details" class="btn-details">Details</a>
+          {{>crypto}}
         {{/each}}
-
       {{else}}
         <div class="no-offer">
           <p>There are no crypto offers found!</p>

@@ -2,11 +2,13 @@
   <!-- In case of error, you should display div with class "errorContainer" -->
   <!-- You can choose to display the first error or all of them (error message/s in your opinion) -->
 
-  <!-- <div>
-            <div class="errorContainer">
-                <p>Error</p>
-            </div>
-        </div> -->
+  {{#if error}}
+  <div>
+    <div class="errorContainer">
+      <p>{{error}}</p>
+    </div>
+  </div>
+  {{/if}}
   <section id="create-container">
     <div class="create-container-info">
       <h1>Create Announcement</h1>
@@ -27,7 +29,7 @@
           <option value="debit-card">Debit Card</option>
           <option value="paypal">PayPal</option>
         </select>
-        <input type="submit" id="btn" value="TRADE"/>
+        <input type="submit" id="btn" value="TRADE" />
       </form>
     </div>
   </section>

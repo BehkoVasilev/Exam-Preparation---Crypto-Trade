@@ -1,8 +1,8 @@
 const router = require('express').Router();
-const { methodsMap } = require('../constants');
 const { isAuthenticated } = require('../middlewares/authenticationMiddleware');
 const cryptoService = require('../service/cryptoService');
 const { getErrorMessage } = require('../utils/errorUtils');
+const { getPaymentMethodViewData } = require('../utils/viewDataUtils');
 
 // URL: /accessories/create
 router.get('/catalog', async (req, res) => {
@@ -32,27 +32,33 @@ router.get('/:cryptoId/buy', isAuthenticated, async (req, res) => {
     res.redirect(`/crypto/${req.params.cryptoId}/details`);
 });
 
-router.get('/search', isAuthenticated, (req, res) => {
-    res.render('crypto/search')
+router.get('/search', isAuthenticated, async (req, res) => {
+    const { name, method } = req.query;
+
+    const paymentMethod = getPaymentMethodViewData(method);
+
+    const allCrypto = await cryptoService.search(name, method);
+
+    res.render('crypto/search', { allCrypto, name, paymentMethod });
 });
 
 router.get('/:cryptoId/edit', isAuthenticated, async (req, res) => {
     const crypto = await cryptoService.getOne(req.params.cryptoId).lean();
 
-    const paymentMehtods = Object.keys(methodsMap).map(key => ({
-        value: key,
-        label: methodsMap[key],
-        isSelected: crypto.method == key,
-    }));
+    const paymentMethod = getPaymentMethodViewData(crypto.method);
 
-    res.render('crypto/edit', { crypto, paymentMehtods })
+
+    res.render('crypto/edit', { crypto, paymentMethod })
 });
 
 router.post('/:cryptoId/edit', isAuthenticated, async (req, res) => {
     const cryptoData = req.body;
     const cryptoId = req.params.cryptoId;
-
-    await cryptoService.editOne(cryptoId, cryptoData);
+    try {
+        await cryptoService.editOne(cryptoId, cryptoData);
+    } catch (err) {
+        res.render('crypto/edit', { error: getErrorMessage(err) })
+    }
 
     res.redirect(`/crypto/${cryptoId}/details`)
 })
